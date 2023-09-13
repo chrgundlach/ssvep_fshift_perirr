@@ -7,11 +7,13 @@ function [ conmat ] = rand_FShift_PerIrr(p,RDK,flag_training)
 
 % set trial number etc
 if flag_training~=0
-    conmat.totaltrials = numel(p.stim.condition)*numel(p.stim.eventnum)*p.stim.con_repeats_t;
+    conmat.totaltrials = numel(p.stim.condition)*numel(p.stim.eventnum_t)*p.stim.con_repeats_t;
     conmat.totalblocks = 1;
+    p.stim.eventnum = p.stim.eventnum_t;
 else
-    conmat.totaltrials = numel(p.stim.condition)*numel(p.stim.eventnum)*p.stim.con_repeats_e;
+    conmat.totaltrials = sum(numel(p.stim.eventnum_e)*p.stim.con_repeats);
     conmat.totalblocks = p.stim.blocknum;
+    p.stim.eventnum = p.stim.eventnum_e;
 end
 conmat.trialsperblock = conmat.totaltrials/conmat.totalblocks;
 
@@ -186,7 +188,7 @@ for i_tr = 1:conmat.totaltrials
     conmat.trials(i_tr).condition = conmat.mats.condition(i_tr);
     
     % RDK to display
-    t.mat = [1 2 3 4; 1 2 3 4; 1 2 3 5; 1 2 3 5; 1 2 4 5; 1 2 4 5];
+    t.mat = [p.stim.RDKcenter p.stim.RDKperi+2];
     conmat.trials(i_tr).RDK2display = t.mat(conmat.mats.condition(i_tr),:);
     
     % cue ((RDK1, RDK2) [1,2])

@@ -6,10 +6,11 @@ function [] = run_FShift_PerIrr(sub,flag_training, flag_isolum, flag_block)
 %       flag_isolum:    1 = do isoluminance adjustment
 %       flag_block:     1 = start with block 1
 %           e.g. run_FShift_PerIrr(1,1, 0, 1)
+% 
+% current version includes two irrelevant colors in periphery
 
 
-
-% Christopher Gundlach, Maria Dotzer,  Leipzig, 2021, 2020
+% Christopher Gundlach, Maria Dotzer,  Leipzig, 2023,2021, 2020
 
 if nargin < 4
     help run_FShift_PerIrr
@@ -45,13 +46,21 @@ p.isol.bckgr            = p.scr_color(1:3)+0.2;          % isoluminant to backgr
 
 
 % stimplan
-p.stim.condition        = [1 2 3 4 5 6];    % [C1 C2; C1 C2] [C1 C2; C1 C2] [C1 C2; C1 C3] [C1 C2; C1 C3] [C1 C2; C2 C3] [C1 C2; C2 C3]
-p.stim.RDKcenter        = [1 2; 1 2; 1 2; 1 2; 1 2; 1 2]; % defines which RDK are shown in center
-p.stim.RDKperi          = [1 2; 1 2; 1 3; 1 3; 2 3; 2 3]; % defines which RDK are shown in the periphery
-p.stim.RDK2attend       = [1 2 1 2 1 2];    % defines which RDK to attend in which condition
-p.stim.eventnum         = [0 0  1 2];        % ratio of eventnumbers
-p.stim.con_repeats_e    = 35;               % trial number/repeats for each eventnum in experiment
-p.stim.con_repeats_t    = 1;                % trial number/repeats for each eventnum in training
+p.stim.condition        = [1 2 3 4 5 6 7 8 9 10 11 12];    
+                        % [C1 C2; C1 C2] [C1 C2; C1 C2] attended unattended in periphery
+                        % [C1 C2; C1 C3] [C1 C2; C2 C3] [C1 C2; C1 C4] [C1 C2; C2 C4] attended and irrelevant in periphery
+                        % [C1 C2; C2 C3] [C1 C2; C1 C3] [C1 C2; C2 C4] [C1 C2; C1 C4] unattended and irrelevant in periphery
+                        % [C1 C2; C3 C4] [C1 C2; C3 C4] irrelevant in periphery
+p.stim.RDKcenter        = repmat([1 2],12,1); % defines which RDK are shown in center [always RDK1 and RDK2]
+p.stim.RDKperi          =  [1 2; 1 2; ... % defines which RDK are shown in the periphery
+                            1 3; 2 3; 1 4; 2 4; ...
+                            2 3; 1 3; 2 4; 1 4; ...
+                            3 4; 3 4];
+p.stim.RDK2attend       = repmat([1 2],1,12/2);    % defines which RDK to attend in which condition
+p.stim.eventnum_e       = [0 0 0 0 1 2];        % ratio of eventnumbers for experiment
+p.stim.eventnum_t       = [0 1 2];        % ratio of eventnumbers for experiment
+p.stim.con_repeats      = [20 20 10 10 10 10 10 10 10 10 20 20];  % trial number/repeats for each eventnum and condition
+p.stim.trialnum_t       = 20;               % trial number in training
 p.stim.time_postcue     = 2;                % post.cue time in s
 p.stim.time_precue      = [1.5 2];          % precue time in s; [upper lower] for randomization
 p.stim.event.type       = 2;                % types of events (1 = targets only, 2 = targets + distrators)
@@ -59,7 +68,7 @@ p.stim.event.length     = 0.3;              % lengt of events in s
 p.stim.event.min_onset  = 0.2;              % min post-cue time before event onset in s
 p.stim.event.min_offset = 0;                % min offset from target end to end of trial in s
 p.stim.event.min_dist   = 0.8;              % min time between events in s
-p.stim.blocknum         = 15;               % number of blocks
+p.stim.blocknum         = 20;               % number of blocks
 p.stim.ITI              = [1 1];            % ITI range in seconds
 p.stim.frames_postcue   = p.stim.time_postcue*p.scr_refrate;
 
@@ -67,7 +76,7 @@ p.stim.frames_postcue   = p.stim.time_postcue*p.scr_refrate;
 % introduce RDK structure
 RDK.RDK(1).size         = [154 308];                    % width and height of RDK in pixel; only even values [38 = 9.6°]
 RDK.RDK(1).centershift  = [0 0];                        % position of RDK center; x and y deviation from center in pixel
-RDK.RDK(1).col          = [0 1 0 1; p.scr_color(1:3) 0];% "on" and "off" color
+RDK.RDK(1).col          = [1 0.4 0 1; p.scr_color(1:3) 0];% "on" and "off" color
 RDK.RDK(1).freq         = 0;                            % flicker frequency, frequency of a full "on"-"off"-cycle
 RDK.RDK(1).mov_freq     = 120;                          % Defines how frequently the dot position is updated; 0 will adjust the update-frequency to your flicker frequency (i.e. dot position will be updated with every "on"-and every "off"-frame); 120 will update the position for every frame for 120Hz or for every 1. quadrant for 480Hz 
 RDK.RDK(1).num          = 85;                           % number of dots
@@ -77,11 +86,13 @@ RDK.RDK(1).dot_size     = 10;                           % size of dots
 RDK.RDK(1).shape        = 1;                            % 1 = square RDK; 0 = ellipse/circle RDK;
 
 p.stim.pos_shift        = [-255 0];                     % position shift in pixel for stimuli in periphery [255 = 7.8°]
-p.stim.freqs            = {[27 30];[18 21 24]};         % frequencies of {[center1 center2];[peri1 peri2 peri3]}
+p.stim.freqs            = {[27 30];[15 18 21 24]};      % frequencies of {[center1 center2];[peri1 peri2 peri3]}
 p.stim.colors           = ...                           % "on" and "off" color
-    {[0 1 0 1; p.scr_color(1:3) 0];...
+    {[1 0.4 0 1; p.scr_color(1:3) 0];...
     [0 0.4 1 1; p.scr_color(1:3) 0];...
-    [1 0.4 0 1; p.scr_color(1:3) 0]};
+    [0 1 0 1; p.scr_color(1:3) 0]; ...
+    [1 0 1 1; p.scr_color(1:3) 0]};
+    % plot_colorwheel([1 0.4 0; 0 0.4 1; 0 1 0; 1 0 1],'ColorSpace','propixxrgb','LAB_L',50,'NumSegments',60,'AlphaColWheel',1,'LumBackground',100)
  
 RDK.event.type          = 'globalmotion';       % event type global motion
 RDK.event.duration      = p.stim.event.length;  % time of coherent motion
@@ -99,11 +110,11 @@ p.trig.rec_start        = 253;                  % trigger to start recording
 p.trig.rec_stop         = 254;                  % trigger to stop recording
 p.trig.tr_start         = 77;                   % trial start; main experiment
 p.trig.tr_stop          = 88;                   % trial end; main experiment
-p.trig.tr_con_type      = [1 2 3 4 5 6];        % condition type: [C1 C2; C1 C2] [C1 C2; C1 C2] [C1 C2; C1 C3] [C1 C2; C1 C3] [C1 C2; C2 C3] [C1 C2; C2 C3]
-p.trig.type             = [100 200; 10 20];     % [first: target, distractor; second: target, distractor]
-p.trig.button           = 60;                   % button press
-p.trig.event_type       = [80 90];              % target, distractor
-p.trig.event_dir        = 1:size(RDK.RDK(1).mov_dir); % movement direction
+p.trig.tr_con_type      = [1 2 3 4 5 6 7 8 9 10 11 12]*10;        % condition type
+p.trig.type             = [1 2; 5 7];     % [first: target, distractor; second: target, distractor]
+p.trig.button           = 150;                   % button press
+p.trig.event_type       = [201 202];              % target, distractor
+
 % possible condition triggers:
 % {[1 101 201 111 121 211 221]; [2 102 202 112 122 212 222]; [3 103 203 113 123 213 223]; ...
 % [4 104 204 114 124 214 224]; [5 105 205 115 125 215 225]; [6 106 206 116 126 216 226]}
@@ -171,22 +182,26 @@ key.keymap_ind = find(key.keymap);
 %% start experiment
 % initialize randomization of stimulation frequencies and RDK colors
 % inititalize RDKs [RDK1 and RDK2 task relevant at center;  RDK3 RDK4 RDK5 not and in periphery]
-rand('state',p.sub)
+% rand('state',p.sub)
+rng(p.sub,'v4')
+
 RDK.RDK(1).col_init = RDK.RDK(1).col;
-RDK.RDK(2:5) = deal(RDK.RDK(1));
+RDK.RDK(2:6) = deal(RDK.RDK(1));
+[RDK.RDK(:).col_init] = deal(p.stim.colors{[1:2 1:end]});
 
 % randomize frequencies
 t.val = num2cell(p.stim.freqs{1}(randperm(2)));
 [RDK.RDK(1:2).freq] = t.val{:};
-t.val = num2cell(p.stim.freqs{2}(randperm(3)));
-[RDK.RDK(3:5).freq] = t.val{:};
+t.val = num2cell(p.stim.freqs{2}(randperm(4)));
+[RDK.RDK(3:6).freq] = t.val{:};
 
-% randomize colors
-[RDK.RDK([1 2 5]).col] = deal(p.stim.colors{randperm(3)});
-[RDK.RDK(3:4).col] = deal(RDK.RDK(1:2).col);
+% randomize colors? no
+% [RDK.RDK([1 2 5 6]).col] = deal(p.stim.colors{randperm(4)});
+% [RDK.RDK(3:4).col] = deal(RDK.RDK(1:2).col);
+[RDK.RDK(:).col] = deal(RDK.RDK(:).col_init);
 
 % position shift in periphery
-[RDK.RDK(3:5).centershift] = deal(p.stim.pos_shift);
+[RDK.RDK(3:6).centershift] = deal(p.stim.pos_shift);
 
 % initialize blank variables
 timing = []; button_presses = []; resp = []; randmat = [];
@@ -239,8 +254,7 @@ if flag_isolum == 1
 %     Datapixx('SetPropixxDlpSequenceProgram', 0);
 %     Datapixx('RegWrRd');
      
-    % initial colors
-    p.isol.init_cols = cell2mat({RDK.RDK.col}'); p.isol.init_cols = p.isol.init_cols(1:2:end,1:3);
+    
     
     % start isoluminance script only RGB output (no alpha)
     [Col2Use] = PRPX_IsolCol_480_adj(...
@@ -275,13 +289,13 @@ else
     isol.opt(1).available = true;
     t.cols = cell2mat({RDK.RDK(:).col}');
     isol.opt(1).colors = t.cols(1:2:end,:);
-    isol.opt(1).text = sprintf('default: [%1.2f %1.2f %1.2f %1.2f] [%1.2f %1.2f %1.2f %1.2f] [%1.2f %1.2f %1.2f %1.2f]',isol.opt(1).colors');
+    isol.opt(1).text = sprintf('default: %s',sprintf('[%1.2f %1.2f %1.2f] ',isol.opt(1).colors(:,1:3)'));
     % option2: use isoluminance values of previously saved dataset
     if ~isempty(t.isol) % file loaded?
         [t.t t.idx] = max(cell2mat(t.datenum));
         isol.opt(2).available = true;
         isol.opt(2).colors = t.isol{t.idx}.coladj(1:end,:);
-        isol.opt(2).text = sprintf('aus gespeicherter Datei: [%1.2f %1.2f %1.2f %1.2f] [%1.2f %1.2f %1.2f %1.2f] [%1.2f %1.2f %1.2f %1.2f] [%1.2f %1.2f %1.2f %1.2f] [%1.2f %1.2f %1.2f %1.2f]',isol.opt(2).colors');
+        isol.opt(2).text = sprintf('aus gespeicherter Datei: %s',sprintf('[%1.2f %1.2f %1.2f] ',isol.opt(2).colors(:,1:3)'));
     else
         isol.opt(2).available = false;
         isol.opt(2).colors = [];
@@ -291,7 +305,7 @@ else
     if ~isempty(p.isol.override)
         isol.opt(3).available = true;
         isol.opt(3).colors = p.isol.override;
-        isol.opt(3).text = sprintf('manuell definiert in p.isol override: [%1.2f %1.2f %1.2f %1.2f] [%1.2f %1.2f %1.2f %1.2f] [%1.2f %1.2f %1.2f %1.2f] [%1.2f %1.2f %1.2f %1.2f] [%1.2f %1.2f %1.2f %1.2f]',isol.opt(3).colors');
+        isol.opt(3).text = sprintf('manuell definiert in p.isol override: %s',sprintf('[%1.2f %1.2f %1.2f] ',isol.opt(3).colors(:,1:3)'));
     else
         isol.opt(3).available = false;
         isol.opt(3).colors = [];
@@ -410,7 +424,7 @@ end
 %% present each block
 % randomization
 rand('state',p.sub);                         % determine randstate
-randmat.experiment = rand_FShiftBase(p, RDK,  0);    % randomization
+randmat.experiment = rand_FShift_PerIrr(p, RDK,  0);    % randomization
 for i_bl = p.flag_block:p.stim.blocknum
     % start experiment
     [timing.experiment{i_bl},button_presses.experiment{i_bl},resp.experiment{i_bl}] = ...
