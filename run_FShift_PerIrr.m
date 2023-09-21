@@ -88,10 +88,10 @@ RDK.RDK(1).shape        = 1;                            % 1 = square RDK; 0 = el
 p.stim.pos_shift        = [-255 0];                     % position shift in pixel for stimuli in periphery [255 = 7.8°]
 p.stim.freqs            = {[27 30];[15 18 21 24]};      % frequencies of {[center1 center2];[peri1 peri2 peri3]}
 p.stim.colors           = ...                           % "on" and "off" color
-    {[1 0.4 0 1; p.scr_color(1:3) 0];...
-    [0 0.4 1 1; p.scr_color(1:3) 0];...
-    [0 1 0 1; p.scr_color(1:3) 0]; ...
-    [1 0 1 1; p.scr_color(1:3) 0]};
+    {[1 0.4 0 1; p.scr_color(1:3) 1];...
+    [0 0.4 1 1; p.scr_color(1:3) 1];...
+    [0 1 0 1; p.scr_color(1:3) 1]; ...
+    [1 0 1 1; p.scr_color(1:3) 1]};
     % plot_colorwheel([1 0.4 0; 0 0.4 1; 0 1 0; 1 0 1],'ColorSpace','propixxrgb','LAB_L',50,'NumSegments',60,'AlphaColWheel',1,'LumBackground',100)
  
 RDK.event.type          = 'globalmotion';       % event type global motion
@@ -423,7 +423,8 @@ end
 
 %% present each block
 % randomization
-rand('state',p.sub);                         % determine randstate
+% rand('state',p.sub);                         % determine randstate
+rng(p.sub,'v4')
 randmat.experiment = rand_FShift_PerIrr(p, RDK,  0);    % randomization
 for i_bl = p.flag_block:p.stim.blocknum
     % start experiment
