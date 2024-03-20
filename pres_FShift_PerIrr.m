@@ -57,7 +57,7 @@ for i_tr = 1:numel(trialindex)
     RDKin.trial.event = struct('onset',conmat.trials(trialindex(i_tr)).event_onset_frames,...
         'direction',conmat.trials(trialindex(i_tr)).eventdirection,'RDK',conmat.trials(trialindex(i_tr)).eventRDK);
     RDKin.RDK.RDK = RDK.RDK(conmat.trials(trialindex(i_tr)).RDK2display);
-    [colmat,dotmat,dotsize,rdkidx,frames] = RDK_init_FShiftPerIrr(RDKin.scr,RDKin.Propixx,RDKin.RDK,RDKin.trial,RDKin.crs);
+    [colmat,dotmat,dotsize,rdkidx,frames] = RDK_init_FShift_PerIrr(RDKin.scr,RDKin.Propixx,RDKin.RDK,RDKin.trial,RDKin.crs);
     
     % initialize fixation cross
     colmat_cr = repmat(p.crs.color' ,[1 1 size(colmat,3)]);
@@ -125,8 +125,7 @@ for i_tr = 1:numel(trialindex)
     doutWave(resp(i_tr).cue_onset_fr) = resp(i_tr).triggernum;
     % event trigger
     for i_ev = 1:resp(i_tr).eventnum
-        t.trigger = p.trig.event_type(resp(i_tr).eventtype(i_ev))+ ...
-             p.trig.event_dir(resp(i_tr).eventdirection(i_ev));
+        t.trigger = p.trig.event_type(resp(i_tr).eventtype(i_ev));
          doutWave(resp(i_tr).event_onset_frames(i_ev)) = t.trigger;
     end
     doutWave = [doutWave;zeros(triggersPerRefresh-1,numel(doutWave))]; doutWave=doutWave(:);

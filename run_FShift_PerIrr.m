@@ -59,6 +59,7 @@ p.stim.RDK2attend       = repmat([1 2],1,6/2);    % defines which RDK to attend 
 p.stim.eventnum_e       = [0 0 0 0 1 2];        % ratio of eventnumbers for experiment
 p.stim.eventnum_t       = [0 1 2];        % ratio of eventnumbers for training
 p.stim.con_repeats      = [25 25 25 25 25 25];  % trial number/repeats for each eventnum and condition
+p.stim.con_repeats_t    = [1];              % trial number/repeats for each eventnum and condition
 p.stim.trialnum_t       = 20;               % trial number in training
 p.stim.time_postcue     = 2;                % post.cue time in s
 p.stim.time_precue      = [1.5 2];          % precue time in s; [upper lower] for randomization
