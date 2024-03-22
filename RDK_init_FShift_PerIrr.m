@@ -1,4 +1,4 @@
-function [colmat,dotmat,dotsize,rdkidx,frames,varargout] = RDK_init_FShift_Probabil(scr,Propixx,RDK,trial,cross)
+function [colmat,dotmat,dotsize,rdkidx,frames,varargout] = RDK_init_FShift_PerIrr(scr,Propixx,RDK,trial,cross)
 %RDK_init initializes parameters for RDKs
 % This function initializes dot colors and dot positions for every frame.
 % The different RDKs are treated as "one big dot cloud". Dots are

@@ -242,7 +242,7 @@ while (~key.keycode(Keys(3)) && ~key.keycode_prev(Keys(3))) || key.keycode_prev(
         Screen('TextSize', p.window, 20);
         Screen('TextFont', p.window, 'Courier');
         DrawFormattedText(p.window, ['\n\n\n\n' sprintf('%1.2f',StepSize) '\n' sprintf('%1.2f',LumAdj)], ...
-            p.xCenter+p.shift(i_quad,1), p.yCenter+p.shift(i_quad,2)-290, [1 1 1]);
+            p.xCenter+p.shift(i_quad,1), p.yCenter+p.shift(i_quad,2)+, [1 1 1]);
     end
      
     
