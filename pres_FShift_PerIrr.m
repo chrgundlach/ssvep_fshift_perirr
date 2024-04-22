@@ -169,6 +169,10 @@ for i_tr = 1:numel(trialindex)
         
         % Flip
         [timing(i_tr).VBLTimestamp(i_fl), timing(i_tr).StimulusOnsetTime(i_fl), timing(i_tr).FlipTimestamp(i_fl), timing(i_tr).Missed(i_fl)] = Screen('Flip', ps.window, 0);
+
+        % get image
+        %current_display = Screen('GetImage',ps.window);
+        %imwrite(current_display,'./stims/all_stims_cue_redtarget_increase.png')
         
         % send trigger/save timing/ reset timing
         if i_fl == 1
