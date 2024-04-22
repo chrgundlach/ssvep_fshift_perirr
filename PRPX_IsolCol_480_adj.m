@@ -1,9 +1,11 @@
-function [AdjConditions]=PRPX_IsolCol_480_adj(Colors,TrialsPerCon,MaxStd,Shift,varargin);
+function [AdjConditions]=PRPX_IsolCol_480_adj(Colors,TrialsPerCon,MaxStd,Shift,varargin)
 % function [AdjConditions]=PRPX_IsolCol_480_adj(Colors,TrialsPerCon,MaxStd,Shift,varargin)
-% -Colors: rows with R/G/B values (max 1). Colors will be adjusted to first row.
-% -TrialsPerCon: Number of repetitions for each color
-% -Shift: displacement of ellipse from center in pixel e.g [-300 0 +421]
-% - optional (varargin)
+%   - Colors: rows with R/G/B values (max 1). Colors will be adjusted to first row.
+%   - TrialsPerCon: Number of repetitions for each color
+%   - Shift: displacement of ellipse from center in pixel; two input modi
+%       - [x y z]: cycles through all shifts for each color e.g [-300 0 +421]
+%       - [x; y; z]: shift specified for each color (col_x; col_y; col_z) e.g [-300; 0; +421]
+%   - optional (varargin)
 %       - size in pixel [x y], eg. [360 540] is default
 %
 % -Assumes psychtoolbox is initiated and ProPixx attached
@@ -20,14 +22,12 @@ function [AdjConditions]=PRPX_IsolCol_480_adj(Colors,TrialsPerCon,MaxStd,Shift,v
 % for troubleshooting:
 %   Colors = [0.2 0.2 0.2; 1 0 0; 0 0 1]; TrialsPerCon = 6;MaxStd = 15; Shift = [0 -300];
 %   Colors = [0.2 0.2 0.2; 1 0 0]; TrialsPerCon = 6;MaxStd = 15; Shift = [0 -300];
+%   Colors = [0.2 0.2 0.2; 1 0 0; 0 1 0]; TrialsPerCon = 6;MaxStd = 15; Shift = [0; -300];
 %
-% open points:_v2
-%   - use more coloovalRectr values? done
-%   - what to do with Screen('BlendFunction'
 %
-% 2006,2008 - S.Andersen
-% 2018,2020 - C.Gundlach
-% 2019      - N.Forschack
+% 2006,2008         - S.Andersen
+% 2018,2020,2024    - C.Gundlach
+% 2019              - N.Forschack
 
 if nargin <4
     help PRPX_IsolCol_480_adj
@@ -94,13 +94,27 @@ while ~(key.keyisdown==1)
 end
 
 % start isoluminance adjustment
-ShAdj=numel(Shift); % shifts to adjust
-LumAdj=zeros((size(Colors,1)-1)*ShAdj,1); % luminance values to adjust
-LumAdjMed = LumAdj;
-Pos2Pre=repmat(Shift',size(Colors,1)-1,1); % positions to present
-Col2Pre = []; % create matrix with color values
-for i_col = 1:size(Colors,1)-1
-    Col2Pre(end+1:end+ShAdj,:)=repmat(Colors(i_col+1,:),ShAdj,1);
+% get shift right
+if diff(size(Shift))<0
+    % check if enough colors were specified
+    if size(Shift,1)~=size(Colors,1)-1
+        fprintf('\n###Colors and Shift don''t match!\n###')
+        help(mfilename), return
+    else
+        LumAdj=zeros((size(Colors,1)-1),1); % luminance values to adjust
+        LumAdjMed = LumAdj;
+        Pos2Pre = Shift;
+        Col2Pre = Colors(2:end,:);
+    end
+else
+    ShAdj=numel(Shift); % shifts to adjust
+    LumAdj=zeros((size(Colors,1)-1)*ShAdj,1); % luminance values to adjust
+    LumAdjMed = LumAdj;
+    Pos2Pre=repmat(Shift',size(Colors,1)-1,1); % positions to present
+    Col2Pre = []; % create matrix with color values
+    for i_col = 1:size(Colors,1)-1
+        Col2Pre(end+1:end+ShAdj,:)=repmat(Colors(i_col+1,:),ShAdj,1);
+    end
 end
 
 while any(LumAdj==0)
@@ -217,18 +231,20 @@ while (~key.keycode(Keys(3)) && ~key.keycode_prev(Keys(3))) || key.keycode_prev(
             OvalCol = [ColFix(1),ColFix(2),ColFix(3)]; % color of off frame
         end
         % quadshifted positions
-        ovalRect_PosAdj_q = CenterRectOnPointd(ovalRect,p.xCenter+p.shift(i_quad,1), p.yCenter+p.shift(i_quad,2));
+        ovalRect_PosAdj_q = CenterRectOnPointd(ovalRect,p.xCenter+p.shift(i_quad,1)+ PosAdj, p.yCenter+p.shift(i_quad,2));
         
         Screen('FillOval', p.window, OvalCol, ovalRect_PosAdj_q) % actual drawing command
         
         % draw fixation cross
         Screen('DrawLines', p.window, crs.allCoords, 1, [0.8 0.8 0.8], [p.xCenter+p.shift(i_quad,1) p.yCenter+p.shift(i_quad,2)], 2);
-    end
     
-    % trouble shooting display
-    %     Screen('TextSize', p.window, 20);
-    %     Screen('TextFont', p.window, 'Courier');
-    %     DrawFormattedText(p.window, ['\n\n\n\n' sprintf('%1.2f',StepSize) '\n' sprintf('%1.2f',LumAdj)],'center', 'center', [1 1 1]);
+        % trouble shooting display
+        Screen('TextSize', p.window, 20);
+        Screen('TextFont', p.window, 'Courier');
+        DrawFormattedText(p.window, ['\n\n\n\n' sprintf('%1.2f',StepSize) '\n' sprintf('%1.2f',LumAdj)], ...
+            p.xCenter+p.shift(i_quad,1), p.yCenter+p.shift(i_quad,2)-290, [1 1 1]);
+    end
+     
     
     Screen('Flip', p.window, 0); % show background
 end
