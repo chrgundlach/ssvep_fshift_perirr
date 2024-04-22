@@ -171,7 +171,7 @@ for i_tr = 1:numel(trialindex)
 
         % get image
         %current_display = Screen('GetImage',ps.window);
-        %imwrite(current_display,'./stims/all_nocue_centralredblue_periredgreen.png')
+        %imwrite(current_display,'./stims/all_redcue_centralredblue_periredblue.png')
         
         % send trigger/save timing/ reset timing
         if i_fl == 1
