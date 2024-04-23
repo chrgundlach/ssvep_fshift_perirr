@@ -239,10 +239,10 @@ while (~key.keycode(Keys(3)) && ~key.keycode_prev(Keys(3))) || key.keycode_prev(
         Screen('DrawLines', p.window, crs.allCoords, 1, [0.8 0.8 0.8], [p.xCenter+p.shift(i_quad,1) p.yCenter+p.shift(i_quad,2)], 2);
     
         % trouble shooting display
-        Screen('TextSize', p.window, 20);
-        Screen('TextFont', p.window, 'Courier');
-        DrawFormattedText(p.window, ['\n\n\n\n' sprintf('%1.2f',StepSize) '\n' sprintf('%1.2f',LumAdj)], ...
-            p.xCenter+p.shift(i_quad,1), p.yCenter+p.shift(i_quad,2)-290, [1 1 1]);
+%         Screen('TextSize', p.window, 20);
+%         Screen('TextFont', p.window, 'Courier');
+%         DrawFormattedText(p.window, ['\n\n\n\n' sprintf('%1.2f',StepSize) '\n' sprintf('%1.2f',LumAdj)], ...
+%             p.xCenter+p.shift(i_quad,1), p.yCenter+p.shift(i_quad,2)-290, [1 1 1]);
     end
      
     
