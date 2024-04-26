@@ -71,7 +71,9 @@ for i_con = 1:numel(p.stim.condition)
         else
             % adjust!
             t.evtypemat = [repmat(t.all_combs,1,floor(sum(t.idx&t.idx2)/size(t.all_combs,2))) ...
-                t.all_combs(:,randperm(size(t.all_combs,2), mod(sum(t.idx&t.idx2),size(t.all_combs,2))))];
+                ];
+            
+            t.all_combs(:,randperm(size(t.all_combs,2),sum(t.idx&t.idx2)));
         end
         conmat.mats.eventtype(1:i_eventnum,t.idx&t.idx2) = t.evtypemat;
     end
