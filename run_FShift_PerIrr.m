@@ -10,11 +10,13 @@ function [] = run_FShift_PerIrr(sub,flag_training, flag_isolum, flag_block)
 % current version includes two irrelevant colors in periphery
 % swapped back to one irrelevant color in periphery
 %
-% to be discussed
-%   - swapping around colors?
+% log
+%   - 2024-04-29 after participant/pilot 03
+%       - changed number of dots in each RDK from 85 to 100 [increase SSVEP in periphery]
+%       - changed coherence for targets from 0.4 to 0.3 
 
 
-% Christopher Gundlach, Maria Dotzer,  Leipzig, 2023,2021, 2020
+% Christopher Gundlach, Maria Dotzer,  Leipzig, 2024,2023,2021, 2020
 
 if nargin < 4
     help run_FShift_PerIrr
@@ -106,7 +108,7 @@ p.stim.color_names      = {'redish';'blue';'green'};
  
 RDK.event.type          = 'globalmotion';       % event type global motion
 RDK.event.duration      = p.stim.event.length;  % time of coherent motion
-RDK.event.coherence     = .4;                   % percentage of coherently moving dots 0.4
+RDK.event.coherence     = .3;                   % percentage of coherently moving dots 0.4 [changed to 0.3]
 RDK.event.direction     = RDK.RDK(1).mov_dir;   % movement directions for events
 
 % fixation cross
