@@ -194,8 +194,8 @@ key.keymap_ind = find(key.keymap);
 %% start experiment
 % initialize randomization of stimulation frequencies and RDK colors
 % inititalize RDKs [RDK1 and RDK2 task relevant at center;  RDK3 RDK4 RDK5 not and in periphery]
-% rand('state',p.sub)
-rng(p.sub,'v4')
+rand('state',p.sub)
+% rng(p.sub,'v4')
 
 RDK.RDK(1).col_init = RDK.RDK(1).col;
 RDK.RDK(2:5) = deal(RDK.RDK(1));
@@ -448,8 +448,8 @@ end
 
 %% present each block
 % randomization
-% rand('state',p.sub);                         % determine randstate
-rng(p.sub,'v4')
+rand('state',p.sub);                         % determine randstate
+% rng(p.sub,'v4')
 randmat.experiment = rand_FShift_PerIrr(p, RDK,  0);    % randomization
 for i_bl = p.flag_block:p.stim.blocknum
     % start experiment
