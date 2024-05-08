@@ -196,10 +196,10 @@ key.keymap_ind = find(key.keymap);
 % inititalize RDKs [RDK1 and RDK2 task relevant at center;  RDK3 RDK4 RDK5 not and in periphery]
 rand('state',1)
 % quasi randomize position
-t.pos = [];
+t.pos = nan(50,size(p.stim.pos_shift,2))
 for i_rep = 1:25
-    t.pos = cat(1,t.pos,p.stim.pos_shift(randsample(1:2,2),:));
-end
+t.pos = 
+
 
 rand('state',p.sub)
 % rng(p.sub,'v4')
@@ -224,7 +224,7 @@ p.isol.override = p.isol.override(p.colrandidx,:);
 p.isol.init_cols = cell2mat(cellfun(@(x) x(1,:),{RDK.RDK(:).col},'UniformOutput',false)');
 
 % random position shift in periphery
-[RDK.RDK(3:5).centershift] = deal(t.pos(p.sub,:));
+[RDK.RDK(3:5).centershift] = deal(p.stim.pos_shift(randsample(1:2,1),:));
 
 % initialize blank variables
 timing = []; button_presses = []; resp = []; randmat = [];
