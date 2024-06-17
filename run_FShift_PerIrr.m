@@ -14,6 +14,8 @@ function [] = run_FShift_PerIrr(sub,flag_training, flag_isolum, flag_block)
 %   - 2024-04-29 after participant/pilot 03
 %       - changed number of dots in each RDK from 85 to 100 [increase SSVEP in periphery]
 %       - changed coherence for targets from 0.4 to 0.3 
+%   - 2024-06-17
+%       - changed back from rand('state',p.sub) to rng(p.sub,'v4') --> randperm was not reset by rand('stat')
 
 
 % Christopher Gundlach, Maria Dotzer,  Leipzig, 2024,2023,2021, 2020
@@ -201,8 +203,9 @@ for i_rep = 1:100
     t.pos = cat(1,t.pos,p.stim.pos_shift(randsample(1:2,2),:));
 end
 
-rand('state',p.sub)
-% rng(p.sub,'v4')
+
+% rand('state',p.sub)
+rng(p.sub,'v4')
 
 RDK.RDK(1).col_init = RDK.RDK(1).col;
 RDK.RDK(2:5) = deal(RDK.RDK(1));
@@ -455,8 +458,8 @@ end
 
 %% present each block
 % randomization
-rand('state',p.sub);                         % determine randstate
-% rng(p.sub,'v4')
+% rand('state',p.sub);                         % determine randstate
+rng(p.sub,'v4')
 randmat.experiment = rand_FShift_PerIrr(p, RDK,  0);    % randomization
 for i_bl = p.flag_block:p.stim.blocknum
     % start experiment
