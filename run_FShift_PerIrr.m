@@ -14,8 +14,20 @@ function [] = run_FShift_PerIrr(sub,flag_training, flag_isolum, flag_block)
 %   - 2024-04-29 after participant/pilot 03
 %       - changed number of dots in each RDK from 85 to 100 [increase SSVEP in periphery]
 %       - changed coherence for targets from 0.4 to 0.3 
-%   - 2024-06-17
+%   - 2024-06-17 starting with participant 22
 %       - changed back from rand('state',p.sub) to rng(p.sub,'v4') --> randperm was not reset by rand('stat')
+%       - introduced some major changes, due to no prototypical feature effect in the data
+%           - stimuli isoluminat to background; 
+%               - from p.isol.override         = [0.4706 0.1882 0 1; 0 0.3498 0.8745 1;0 0.4392 0 1]; 
+%               - from p.isol.bckgr            = p.scr_color(1:3)+0.2; to p.isol.bckgr            = p.scr_color;
+%           - lower frequencies
+%               - from p.stim.freqs = {[26 29];[17 20 23]}; to  {[23 26];[14 17 20]};
+%           - coherence back to 0.4
+%               -from RDK.event.coherence     = .3; to RDK.event.coherence     = .4;
+%           - luminance of fixation cross color
+%               - from p.crs.color             = [0.8 0.8 0.8 1]; to p.crs.color             = [0.5 0.5 0.5 1];
+%           - number of dots to 85
+%               -from RDK.RDK(1).num          = 100; to RDK.RDK(1).num          = 85;
 
 
 % Christopher Gundlach, Maria Dotzer,  Leipzig, 2024,2023,2021, 2020
@@ -49,9 +61,11 @@ p.isol.run              = false;                % isoluminance run?
 % p.isol.override         = [];                   % manually set colors for RDK1 to RDKXs e.g. []
 % p.isol.override         = [0.0862745098039216 0.0345098039215686 0 1; 0 0.0627450980392157 0.156862745098039 1;0 0.0823529411764706 0 1];
 % p.isol.override         = [0.454901960784314 0.181960784313726 0 1; 0 0.332549019607843 0.831372549019608 1;0 0.439215686274510 0 1];
-p.isol.override         = [0.4706 0.1882 0 1; 0 0.3498 0.8745 1;0 0.4392 0 1];
-p.isol.bckgr            = p.scr_color(1:3)+0.2;          % isoluminant to background or different color?
-% p.isol.bckgr            = p.scr_color;          % isoluminant to background or different color?
+% p.isol.override         = [0.4706 0.1882 0 1; 0 0.3498 0.8745 1;0 0.4392 0 1]; % these are the ones used for p.isol.bckgr            = p.scr_color(1:3)+0.2;
+p.isol.override         = [0.0980 0.0392 0 1; 0 0.0596 0.1490 1;0 0.0745 0 1]; % these are the ones used for p.isol.bckgr = p.scr_color(1:3);
+
+% p.isol.bckgr            = p.scr_color(1:3)+0.2;          % isoluminant to background or different color?
+p.isol.bckgr            = p.scr_color;          % isoluminant to background or different color?
 
 
 % stimplan
@@ -87,14 +101,15 @@ RDK.RDK(1).centershift  = [0 0];                        % position of RDK center
 RDK.RDK(1).col          = [1 0.4 0 1; p.scr_color(1:3) 0];% "on" and "off" color
 RDK.RDK(1).freq         = 0;                            % flicker frequency, frequency of a full "on"-"off"-cycle
 RDK.RDK(1).mov_freq     = 120;                          % Defines how frequently the dot position is updated; 0 will adjust the update-frequency to your flicker frequency (i.e. dot position will be updated with every "on"-and every "off"-frame); 120 will update the position for every frame for 120Hz or for every 1. quadrant for 480Hz 
-RDK.RDK(1).num          = 100;                          % number of dots % 85
+RDK.RDK(1).num          = 85;                           % number of dots % 85
 RDK.RDK(1).mov_speed    = 1;                            % movement speed in pixel
 RDK.RDK(1).mov_dir      = [0 1; 0 -1; -1 0; 1 0];       % movement direction  [0 1; 0 -1; -1 0; 1 0] = up, down, left, right
 RDK.RDK(1).dot_size     = 10;                           % size of dots
 RDK.RDK(1).shape        = 1;                            % 1 = square RDK; 0 = ellipse/circle RDK;
 
 p.stim.pos_shift        = [-255 0; 255 0];              % position shift in pixel for stimuli in periphery [255 = 7.8°] either left or right
-p.stim.freqs            = {[26 29];[17 20 23]};         % frequencies of {[center1 center2];[peri1 peri2 peri3]}
+% p.stim.freqs            = {[26 29];[17 20 23]};         % frequencies of {[center1 center2];[peri1 peri2 peri3]}
+p.stim.freqs            = {[23 26];[14 17 20]};         % frequencies of {[center1 center2];[peri1 peri2 peri3]}
 % p.stim.colors           = ...                           % "on" and "off" color
 %     {[1 0.4 0 1; p.scr_color(1:3) 1];...
 %     [0 0.4 1 1; p.scr_color(1:3) 1];...
@@ -110,11 +125,11 @@ p.stim.color_names      = {'redish';'blue';'green'};
  
 RDK.event.type          = 'globalmotion';       % event type global motion
 RDK.event.duration      = p.stim.event.length;  % time of coherent motion
-RDK.event.coherence     = .3;                   % percentage of coherently moving dots 0.4 [changed to 0.3]
+RDK.event.coherence     = .4;                   % percentage of coherently moving dots 0.4 [changed from 0.4 to 0.3 to 0.4]
 RDK.event.direction     = RDK.RDK(1).mov_dir;   % movement directions for events
 
 % fixation cross
-p.crs.color             = [0.8 0.8 0.8 1];      % color of fixation cross
+p.crs.color             = [0.4 0.4 0.4 1];      % color of fixation cross
 p.crs.size              = 12;                   % size of fixation
 p.crs.width             = 2;                    % width of fixation cross
 p.crs.cutout            = 0;                    % 1 = no dots close to fixation cross
