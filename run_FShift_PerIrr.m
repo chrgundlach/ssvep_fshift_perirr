@@ -197,7 +197,7 @@ key.keymap_ind = find(key.keymap);
 rand('state',1)
 % quasi randomize position
 t.pos = [];
-for i_rep = 1:25
+for i_rep = 1:100
     t.pos = cat(1,t.pos,p.stim.pos_shift(randsample(1:2,2),:));
 end
 
