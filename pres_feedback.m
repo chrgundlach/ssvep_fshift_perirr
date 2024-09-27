@@ -15,7 +15,7 @@ summ.hits = sum(cell2mat(cellfun(@(x) strcmpi(x,'hit'),{responses.event_response
 summ.misses = sum(cell2mat(cellfun(@(x) strcmpi(x,'miss'),{responses.event_response_type},'UniformOutput',false)));
 summ.CR = sum(cell2mat(cellfun(@(x) strcmpi(x,'CR'),{responses.event_response_type},'UniformOutput',false)));
 summ.FA_proper = sum(cell2mat(cellfun(@(x) strcmpi(x,'FA_proper'),{responses.event_response_type},'UniformOutput',false)));
-summ.FA = sum(cell2mat(cellfun(@(x) strcmpi(x,'FA'),{responses.event_response_type},'UniformOutput',false)));
+summ.FA = sum(cell2mat(cellfun(@(x) strcmpi(x,'FA'),{responses.button_presses_type},'UniformOutput',false)));
 summ.RT_mean = nanmean(cell2mat(arrayfun(@(x,y) x(y), cell2mat({responses.event_response_RT}),...
     cell2mat(cellfun(@(x) strcmpi(x,'hit'),{responses.event_response_type},'UniformOutput',false)),'UniformOutput',false)));
 summ.RT_std = nanstd(cell2mat(arrayfun(@(x,y) x(y), cell2mat({responses.event_response_RT}),...
