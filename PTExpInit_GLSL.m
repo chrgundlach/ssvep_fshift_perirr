@@ -80,11 +80,11 @@ if IsLinux
         screensize=Screen('Rect', Scr.ScrNum);
     end
     % parallel port
-    try ppdev_mex('Close', 1); % open triggerport
+    try ppdev_mex('CloseAll'); % open triggerport
     catch me
         disp(me)
     end
-    try ppdev_mex('Open', 1); % open triggerport
+    try ppdev_mex('Open', 2); % open triggerport
     catch me
         disp(me)
     end

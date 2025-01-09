@@ -149,7 +149,7 @@ p.trig.event_type       = [201 202];              % target, distractor
 % [4 104 204 114 124 214 224]; [5 105 205 115 125 215 225]; [6 106 206 116 126 216 226]}
 
 % logfiles
-p.log.path              = '/home/stimulationspc/matlab/User/christopher/stim_ssvep_fshift_perirr/logfiles/';
+p.log.path              = '/home/stimulation120/matlab/user/christopher/stim_ssvep_fshift_perirr/logfiles/';
 p.log.exp_name          = 'SSVEP_FShift_PerIrr';
 p.log.add               = '_a';
 
